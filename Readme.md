@@ -57,7 +57,7 @@ POST	/api/checkout	Mock checkout receipt
 
 ## Demo Video
 
-(Attach Loom or YouTube unlisted video link here)
+[(Attach Loom or YouTube unlisted video link here)](https://www.loom.com/share/0407c1851fe04c65bf4b062df4fd32f9)
 
 ## Author
 
