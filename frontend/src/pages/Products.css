@@ -1,0 +1,98 @@
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Container */
+.container {
+  padding: 20px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  font-family: "Poppins", sans-serif;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 20px;
+    margin: 0;
+  }
+h1 {
+  font-size: 1.5rem;
+}
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+}
+
+/* Message Box */
+.message {
+  text-align: center;
+  background-color: #13f143;
+  color: #242724;
+  padding: 10px;
+  border-radius: 5px;
+  width: fit-content;
+  margin: 20px auto;
+}
+
+/* Product Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+}
+
+/* Product Card */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+.card p {
+  margin-bottom: 10px;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+/* Button */
+.add-btn {
+  background-color: #7a3ee8;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-btn:hover {
+  background-color: #3a02a3;
+}
+
