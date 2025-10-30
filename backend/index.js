@@ -1,10 +1,13 @@
 // ✅ Step 14 — MongoDB Persistence Integrated
 
+
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Product = require("./models/Product");
 const CartItem = require("./models/CartItem");
+
 
 
 const app = express();
@@ -15,11 +18,10 @@ app.use(express.json());
 
 // ---------- MONGODB CONNECTION ----------
 mongoose
-  
-    .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-    .then(() => console.log("✅ MongoDB connected"))
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ---------- TEST ROUTE ----------
 app.get("/", (req, res) => {

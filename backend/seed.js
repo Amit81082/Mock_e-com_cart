@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
-import Product from "./models/Product.js";
+const mongoose = require("mongoose");
+const Product = require("./models/Product.js");
+require("dotenv").config();
 
-const MONGO_URI =
-  "mongodb+srv://amitkumar345:adi34567@cluster0.b4pc1x7.mongodb.net/?appName=cluster0";
 
 const seedData = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    console.log("Connecting to:", process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB connected");
 
     await Product.deleteMany();
