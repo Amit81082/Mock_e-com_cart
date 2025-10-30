@@ -15,9 +15,11 @@ app.use(express.json());
 
 // ---------- MONGODB CONNECTION ----------
 mongoose
-  .connect("mongodb://127.0.0.1:27017/vibe_cart")
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  
+    .connect(process.env.MONGODB_URI)
+
+    .then(() => console.log("✅ MongoDB connected"))
+    .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ---------- TEST ROUTE ----------
 app.get("/", (req, res) => {

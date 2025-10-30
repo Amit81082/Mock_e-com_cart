@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import Product from "./models/Product.js";
 
-const MONGO_URI = "mongodb://127.0.0.1:27017/vibe_cart";
+const MONGO_URI =
+  "mongodb+srv://amitkumar345:adi34567@cluster0.b4pc1x7.mongodb.net/?appName=cluster0";
 
 const seedData = async () => {
   try {
