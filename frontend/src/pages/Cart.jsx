@@ -3,19 +3,19 @@ import axios from "axios";
 import "./Cart.css"; // external CSS file
 const API_URL = import.meta.env.VITE_API_URL;
 
-
-
 function Cart() {
   const [cart, setCart] = useState([]);
   const [message, setMessage] = useState("");
   const [receipt, setReceipt] = useState(null);
-   const [form, setForm] = useState({ Name: "", email: "" });
+  const [form, setForm] = useState({ Name: "", email: "" });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
       .get(`${API_URL}/api/cart`)
       .then((res) => setCart(res.data.cart || [])) // fallback empty array
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   }, []);
 
   const total = Array.isArray(cart)
@@ -24,7 +24,7 @@ function Cart() {
 
   // 🧾 Checkout function
   const handleCheckout = (e) => {
-     e.preventDefault();
+    e.preventDefault();
     axios
       .post(`${API_URL}/api/checkout`, { ...form, cartItems: cart })
       .then((res) => {
@@ -49,11 +49,10 @@ function Cart() {
     <div className="cart-container">
       <h2>🛒 Your Cart</h2>
 
-      {cart.length === 0 ? (
-        <p className="cart-empty">
-          Your cart is empty. 
-        </p>
-
+      {loading ? (
+        <p>Loading cart...</p>
+      ) : cart.length === 0 ? (
+        <p className="cart-empty">Your cart is empty.</p>
       ) : (
         <div>
           {cart.map((item) => (
