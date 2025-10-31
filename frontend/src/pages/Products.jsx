@@ -7,13 +7,15 @@ const API_URL = import.meta.env.VITE_API_URL;
 function Products() {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch products from backend (MongoDB)
+  // Fetch products from backend (MongoDB)
   useEffect(() => {
     axios
       .get(`${API_URL}/api/products`)
       .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
+      .catch((err) => console.error("Error fetching products:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   // ✅ Add to Cart function
@@ -40,15 +42,19 @@ function Products() {
 
       {/* ✅ Product Grid */}
       <div className="grid">
-        {products.map((p) => (
-          <div key={p._id} className="card">
-            <h3>{p.name}</h3>
-            <p>₹{p.price}</p>
-            <button onClick={() => addToCart(p._id)} className="add-btn">
-              Add to Cart
-            </button>
-          </div>
-        ))}
+        {loading ? (
+          <p>Loading products...</p>
+        ) : (
+          products.map((p) => (
+            <div key={p._id} className="card">
+              <h3>{p.name}</h3>
+              <p>₹{p.price}</p>
+              <button onClick={() => addToCart(p._id)} className="add-btn">
+                Add to Cart
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
