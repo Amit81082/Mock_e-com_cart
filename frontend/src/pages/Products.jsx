@@ -8,28 +8,41 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(null); // track which product is being added
 
-  // Fetch products from backend (MongoDB)
+  // ✅ Fetch products from backend
   useEffect(() => {
-    axios
-      .get(`${API_URL}/api/products`)
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err))
-      .finally(() => setLoading(false));
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axios.get(`${API_URL}/api/products`);
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
-  // ✅ Add to Cart function
+  // ✅ Add to Cart function (instant + smooth UX)
   const addToCart = async (productId) => {
+    setAdding(productId); // show loading for that button
     try {
       const res = await axios.post(`${API_URL}/api/cart`, {
         productId,
         qty: 1,
       });
-      setMessage(res.data.message || "Added to cart!");
-      setTimeout(() => setMessage(""), 2500);
+      setMessage("✅ " + (res.data.message || "Added to cart!"));
+
+      // ✅ instantly clear message after 1.5s
+      setTimeout(() => setMessage(""), 1500);
     } catch (err) {
       console.error(err);
-      setMessage("Error adding to cart");
+      setMessage("❌ Error adding to cart");
+      setTimeout(() => setMessage(""), 1500);
+    } finally {
+      setAdding(null);
     }
   };
 
@@ -37,7 +50,7 @@ function Products() {
     <div className="container">
       <h1>🛍️ Vibe Commerce - Products</h1>
 
-      {/* ✅ Success/Error Message */}
+      {/* ✅ Message */}
       {message && <p className="message">{message}</p>}
 
       {/* ✅ Product Grid */}
@@ -49,8 +62,12 @@ function Products() {
             <div key={p._id} className="card">
               <h3>{p.name}</h3>
               <p>₹{p.price}</p>
-              <button onClick={() => addToCart(p._id)} className="add-btn">
-                Add to Cart
+              <button
+                onClick={() => addToCart(p._id)}
+                className="add-btn"
+                disabled={adding === p._id}
+              >
+                {adding === p._id ? "Adding..." : "Add to Cart"}
               </button>
             </div>
           ))

@@ -30,11 +30,10 @@ app.get("/", (req, res) => {
 
 // ======================================================
 // 1️⃣ GET /api/products — Fetch all products from DB
-// ======================================================
+// ✅ Get all products fast
 app.get("/api/products", async (req, res) => {
   try {
-    const products = await Product.find();
-  //  I can fetch products from an external API(fake store API) as well
+    const products = await Product.find().lean(); // lean() = faster
     res.json(products);
   } catch (err) {
     console.error(err);
@@ -42,26 +41,23 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// ======================================================
-// 2️⃣ POST /api/cart — Add item to cart (MongoDB)
-// ======================================================
+// ✅ Add to cart (optimized)
 app.post("/api/cart", async (req, res) => {
   try {
     const { productId, qty } = req.body;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).lean();
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // Check if already in cart
-    let existingItem = await CartItem.findOne({ productId });
+    // Update or create in one go
+    let item = await CartItem.findOneAndUpdate(
+      { productId },
+      { $inc: { qty: qty } },
+      { new: true }
+    );
 
-    if (existingItem) {
-      existingItem.qty += qty;
-      await existingItem.save();
-    } else {
-      existingItem = await CartItem.create({
+    if (!item) {
+      item = await CartItem.create({
         productId,
         name: product.name,
         price: product.price,
@@ -69,7 +65,7 @@ app.post("/api/cart", async (req, res) => {
       });
     }
 
-    const cart = await CartItem.find();
+    const cart = await CartItem.find().lean();
     res.json({
       message: `${product.name} added to cart 🛍️!`,
       cart,
@@ -80,14 +76,11 @@ app.post("/api/cart", async (req, res) => {
   }
 });
 
-// ======================================================
-// 3️⃣ GET /api/cart — View all cart items + total
-// ======================================================
+// ✅ Get cart (fast)
 app.get("/api/cart", async (req, res) => {
   try {
-    const cart = await CartItem.find();
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
+    const cart = await CartItem.find().lean();
+    const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
     res.json({ cart, total });
   } catch (err) {
     console.error(err);
@@ -95,25 +88,18 @@ app.get("/api/cart", async (req, res) => {
   }
 });
 
-// ======================================================
-// 4️⃣ DELETE /api/cart/:id — Remove an item by productId
-// ======================================================
+// ✅ Remove item
 app.delete("/api/cart/:id", async (req, res) => {
   try {
-    const productId = req.params.id;
-    const deleted = await CartItem.findOneAndDelete({ productId });
-
-    if (!deleted) {
-      return res.status(404).json({ message: "Item not found in cart" });
-    }
-
-    const cart = await CartItem.find();
-    res.json({ message: "Item removed from cart", cart });
+    await CartItem.findByIdAndDelete(req.params.id);
+    const cart = await CartItem.find().lean();
+    res.json({ cart });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error removing item" });
   }
 });
+
 
 // ======================================================
 // 5️⃣ POST /api/checkout — Simulate checkout

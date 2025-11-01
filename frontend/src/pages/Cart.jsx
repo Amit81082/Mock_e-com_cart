@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Cart.css"; // external CSS file
+import "./Cart.css";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Cart() {
@@ -10,41 +11,52 @@ function Cart() {
   const [form, setForm] = useState({ Name: "", email: "" });
   const [loading, setLoading] = useState(true);
 
+  // 🛒 Fetch Cart on Load
   useEffect(() => {
-    axios
-      .get(`${API_URL}/api/cart`)
-      .then((res) => setCart(res.data.cart || [])) // fallback empty array
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    const fetchCart = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/cart`);
+        setCart(res.data.cart || []);
+      } catch (err) {
+        console.error("Error fetching cart:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCart();
   }, []);
 
-  const total = Array.isArray(cart)
-    ? cart.reduce((sum, item) => sum + item.price * item.qty, 0)
-    : 0;
+  // 💰 Calculate Total
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-  // 🧾 Checkout function
-  const handleCheckout = (e) => {
+  // 🧾 Checkout
+  const handleCheckout = async (e) => {
     e.preventDefault();
-    axios
-      .post(`${API_URL}/api/checkout`, { ...form, cartItems: cart })
-      .then((res) => {
-        setMessage(res.data.message);
-        setReceipt(res.data.receipt);
-        setCart([]); // Clear cart on frontend
-      })
-      .catch((err) => {
-        setMessage(err.response?.data?.message || "Something went wrong!");
+    try {
+      const res = await axios.post(`${API_URL}/api/checkout`, {
+        ...form,
+        cartItems: cart,
       });
+      setMessage(res.data.message);
+      setReceipt(res.data.receipt);
+      setCart([]); // clear cart
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setMessage(err.response?.data?.message || "Something went wrong!");
+    }
   };
 
-  // ❌ Remove item function
-  const handleRemove = (id) => {
-    axios
-      .delete(`${API_URL}/api/cart/${id}`)
-      .then((res) => setCart(res.data.cart || [])) // backend returns updated cart
-      .catch((err) => console.error(err));
+  // ❌ Remove Item (Instant UI Update)
+  const handleRemove = async (id) => {
+    setCart((prev) => prev.filter((item) => item.productId !== id)); // instant update
+    try {
+      await axios.delete(`${API_URL}/api/cart/${id}`);
+    } catch (err) {
+      console.error("Error removing item:", err);
+    }
   };
 
+  // 🧱 UI
   return (
     <div className="cart-container">
       <h2>🛒 Your Cart</h2>
@@ -54,20 +66,19 @@ function Cart() {
       ) : cart.length === 0 ? (
         <p className="cart-empty">Your cart is empty.</p>
       ) : (
-        <div>
+        <>
           {cart.map((item) => (
             <div key={item.productId} className="cart-item">
               <span>
-                <strong>{item.name}</strong> - &#8377;{item.price} x {item.qty}
+                <strong>{item.name}</strong> - ₹{item.price} × {item.qty}
               </span>
-              {/* ❌ Remove Button */}
               <button onClick={() => handleRemove(item.productId)}>
                 Remove
               </button>
             </div>
           ))}
 
-          <h3 className="cart-total">Total: &#8377;{total}</h3>
+          <h3 className="cart-total">Total: ₹{total}</h3>
 
           {/* Checkout Form */}
           <form onSubmit={handleCheckout} className="checkout-form">
@@ -87,8 +98,9 @@ function Cart() {
             />
             <button type="submit">Place Order</button>
           </form>
-        </div>
+        </>
       )}
+
       {/* 🧾 Receipt Modal */}
       {receipt && (
         <div className="receipt-modal">
@@ -100,7 +112,7 @@ function Cart() {
             <strong>Email:</strong> {receipt.email}
           </p>
           <p>
-            <strong>Total:</strong> &#8377;{receipt.total}
+            <strong>Total:</strong> ₹{receipt.total}
           </p>
           <p>
             <strong>Date:</strong> {receipt.timestamp}
@@ -108,6 +120,7 @@ function Cart() {
           <button onClick={() => setReceipt(null)}>Close</button>
         </div>
       )}
+
       {message && <p className="message">{message}</p>}
     </div>
   );
