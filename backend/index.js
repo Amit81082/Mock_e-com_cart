@@ -91,7 +91,7 @@ app.get("/api/cart", async (req, res) => {
 // ✅ Remove item
 app.delete("/api/cart/:id", async (req, res) => {
   try {
-    await CartItem.findByIdAndDelete(req.params.id);
+    await CartItem.findOneAndDelete({ productId: req.params.id });
     const cart = await CartItem.find().lean();
     res.json({ cart });
   } catch (err) {
