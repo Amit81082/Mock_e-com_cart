@@ -1,14 +1,11 @@
 // ✅ Step 14 — MongoDB Persistence Integrated
 
-
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Product = require("./models/Product");
 const CartItem = require("./models/CartItem");
-
-
 
 const app = express();
 
@@ -21,7 +18,6 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
-
 
 // ---------- TEST ROUTE ----------
 app.get("/", (req, res) => {
@@ -100,7 +96,6 @@ app.delete("/api/cart/:id", async (req, res) => {
   }
 });
 
-
 // ======================================================
 // 5️⃣ POST /api/checkout — Simulate checkout
 // ======================================================
@@ -138,12 +133,10 @@ app.post("/api/checkout", async (req, res) => {
 // ======================================================
 // ✅ SERVER START
 // ======================================================
-const PORT =  5000;
+const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
-
-
 
 app.use((err, req, res, next) => {
   console.error("Error:", err.stack);

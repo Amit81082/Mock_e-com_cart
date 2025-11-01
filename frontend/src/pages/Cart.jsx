@@ -48,7 +48,7 @@ function Cart() {
 
   // ❌ Remove Item (Instant UI Update)
   const handleRemove = async (id) => {
-    setCart((prev) => prev.filter((item) => item.productId !== id)); // instant update
+    setCart((prev) => prev.filter((item) => item._id !== id)); // instant update
     try {
       await axios.delete(`${API_URL}/api/cart/${id}`);
     } catch (err) {
@@ -72,7 +72,7 @@ function Cart() {
               <span>
                 <strong>{item.name}</strong> - ₹{item.price} × {item.qty}
               </span>
-              <button onClick={() => handleRemove(item.productId)}>
+              <button onClick={() => handleRemove(item._id)}>
                 Remove
               </button>
             </div>
