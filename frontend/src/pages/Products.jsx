@@ -65,7 +65,7 @@ function Products() {
       {/* ✅ Product Grid */}
       <div className="grid">
         {loading ? (
-          <p>Loading products...</p>
+          <div className="loader"></div>
         ) : (
           products.map((p) => (
             <div key={p._id} className="card">

@@ -62,7 +62,7 @@ function Cart() {
       <h2>🛒 Your Cart</h2>
 
       {loading ? (
-        <p>Loading cart...</p>
+        <div className="loader"></div>
       ) : cart.length === 0 ? (
         <p className="cart-empty">Your cart is empty.</p>
       ) : (
